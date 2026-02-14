@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPart Pro | Genuine Car Parts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="bg-blue-600 text-white text-center py-2 text-sm font-semibold">
+        🚚 Nationwide Delivery Across Nigeria | 100% Genuine Parts Guaranteed
+    </div>
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 text-white p-2 rounded-lg font-black text-xl italic">AP</div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900">AUTOPART<span class="text-blue-600">PRO</span></span>
+            </div>
+            <div class="hidden md:flex gap-8 text-slate-600 font-bold">
+                <a href="#" class="hover:text-blue-600 transition">Shop Engine</a>
+                <a href="#" class="hover:text-blue-600 transition">Body Parts</a>
+                <a href="#" class="hover:text-blue-600 transition">Interior</a>
+            </div>
+            <div class="relative">
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                <svg class="w-7 h-7 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 11h14l1 12H4l1-12z"></path></svg>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-gradient py-12 md:py-24 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">Finding Spare Parts just got <span class="text-blue-400">Easier.</span></h1>
+            <p class="text-slate-400 text-lg mb-10">Search by Part Number, Car Model (e.g., Toyota Camry 2015), or Category.</p>
+            
+            <div class="bg-white p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2">
+                <input type="text" placeholder="What part are you looking for?" class="flex-grow p-4 text-gray-700 focus:outline-none rounded-xl">
+                <select class="p-4 text-gray-600 font-semibold border-l border-gray-100 hidden md:block">
+                    <option>All Models</option>
+                    <option>Toyota</option>
+                    <option>Lexus</option>
+                    <option>Honda</option>
+                    <option>Mercedes</option>
+                </select>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-bold transition-all active:scale-95 uppercase tracking-wider">Search Inventory</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-16 px-6">
+        <div class="flex items-center justify-between mb-10">
+            <h2 class="text-3xl font-extrabold text-slate-900">Featured Genuine Parts</h2>
+            <button class="text-blue-600 font-bold hover:underline">View All Parts →</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-slate-200/50 overflow-hidden group">
+                <div class="relative overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1635773054018-22c388432bab?q=80&w=400&auto=format&fit=crop" class="h-56 w-full object-cover group-hover:scale-110 transition duration-500">
+                    <span class="absolute top-4 left-4 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">In Stock</span>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-blue-600 font-bold text-xs uppercase tracking-widest mb-1">Engine</p>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Toyota V6 Cylinder Head</h3>
+                    <p class="text-slate-500 text-sm mb-4 italic">Fits: Camry, Avalon (2012-2020)</p>
+                    <div class="flex items-center justify-center gap-2 mb-6">
+                        <span class="text-2xl font-black text-slate-900">₦185,000</span>
+                    </div>
+                    <button class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-blue-600 transition flex items-center justify-center gap-2">
+                        Order via WhatsApp
+                    </button>
+                </div>
+            </div>
+
+            </div>
+    </main>
+
+    <footer class="bg-slate-950 text-slate-500 py-12 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-slate-800 pb-12">
+            <div>
+                <h4 class="text-white font-bold mb-4">AutoPart Pro</h4>
+                <p class="text-sm leading-relaxed">Connecting Nigerian car owners with genuine spare parts from the most trusted traders in the market.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Location</h4>
+                <p class="text-sm">Ladipo Market, Lagos<br>Nnewi Spare Parts Zone, Anambra</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                <ul class="text-sm flex flex-col gap-2">
+                    <li><a href="#" class="hover:text-blue-400">Become a Seller</a></li>
+                    <li><a href="#" class="hover:text-blue-400">Return Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="text-center mt-8 text-xs">© 2026 AutoPart Pro. Developed for the Traders Community.</p>
+    </footer>
+
+</body>
+</html>
