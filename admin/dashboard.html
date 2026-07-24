@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPro Admin | Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #ffffff; --text: #0f172a; --card: #f8fafc; --border: #e2e8f0; --accent: #2563eb; }
+        .dark-mode { --bg: #0a0f1d; --text: #f1f5f9; --card: #1e293b; --border: #334155; }
+        body { font-family: 'Plus Jakarta Sans'; background-color: var(--bg); color: var(--text); transition: all 0.3s ease; }
+        .app-card { background-color: var(--card); border: 1px solid var(--border); border-radius: 2rem; }
+        .stat-btn { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
+        .part-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 1.5rem; }
+        #editModal, #receiptModal { backdrop-filter: blur(12px); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .toast-enter { transform: translateX(120%); transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .toast-active { transform: translateX(0); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="notif-container" class="fixed top-24 right-6 z-[200] space-y-4 pointer-events-none"></div>
+
+    <nav class="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 stat-btn rounded-xl flex items-center justify-center font-black italic text-white shadow-lg">A</div>
+            <div>
+                <h1 class="font-bold text-lg tracking-tight">AutoPro <span class="text-blue-600 font-black">Command</span></h1>
+                <p class="text-[10px] opacity-50 uppercase tracking-widest font-black">Oga Dashboard</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition"><span id="themeIcon">🌙</span></button>
+            <div class="hidden md:block text-right">
+                <p class="text-xs font-bold" id="adminNameDisplay">Ogirima Obey</p>
+                <p class="text-[10px] text-blue-600 font-black uppercase">Main Oga</p>
+            </div>
+            <button onclick="logout()" class="p-2 text-red-500 hover:bg-red-50 transition rounded-lg font-black text-xs uppercase tracking-widest">Logout</button>
+        </div>
+    </nav>
+
+    <div id="receiptModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90">
+        <div class="max-w-3xl w-full">
+            <div class="flex justify-end mb-4"><button onclick="closeReceiptModal()" class="text-white text-4xl hover:text-red-500 transition">&times;</button></div>
+            <img id="modalReceiptImg" src="" class="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/10">
+        </div>
+    </div>
+
+    <div id="editModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60">
+        <div class="bg-[var(--bg)] w-full max-w-2xl rounded-[2.5rem] p-8 lg:p-12 shadow-2xl border border-[var(--border)] max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold mb-8">Edit Part Details</h3>
+            <form id="editForm" class="space-y-6">
+                <input type="hidden" id="editId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="text" id="editName" placeholder="Part Name" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none">
+                    <select id="editCategory" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none">
+                        <option>Engine Parts</option><option>Gearbox & Transmission</option><option>Shock Absorbers & Brakes</option><option>Body Parts (Doors, Bumpers)</option><option>AC & Electrical</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="number" id="editPrice" placeholder="Price" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none">
+                    <input type="number" id="editDiscount" placeholder="Discount Price" class="w-full px-5 py-4 bg-transparent border border-red-200 rounded-xl outline-none">
+                </div>
+                <button type="submit" class="w-full stat-btn py-5 rounded-2xl font-black uppercase text-white shadow-xl">Update Marketplace</button>
+            </form>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto p-4 lg:p-10 space-y-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="app-card p-8 border-b-4 border-blue-600"><p class="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-2">Revenue Potential</p><h3 class="text-3xl font-black italic tracking-tighter" id="totalRevenue">₦0.00</h3></div>
+            <div class="app-card p-8 border-b-4 border-purple-600"><p class="text-purple-600 text-[10px] font-black uppercase tracking-widest mb-2">Total Customer Leads</p><h3 class="text-3xl font-black tracking-tighter" id="totalOrders">0</h3></div>
+            <div class="app-card p-8 border-b-4 border-orange-600"><p class="text-orange-600 text-[10px] font-black uppercase tracking-widest mb-2">Inventory Count</p><h3 class="text-3xl font-black tracking-tighter" id="itemCount">0</h3></div>
+        </div>
+
+        <div class="app-card p-8 lg:p-12">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                <div><h3 class="text-2xl font-black uppercase tracking-tighter italic">Incoming Sales <span class="text-blue-600">&</span> Receipts</h3></div>
+                <input type="text" id="leadSearch" oninput="filterLeads()" placeholder="Search customer..." class="w-full md:w-80 bg-white/5 border border-[var(--border)] px-6 py-3 rounded-xl text-xs font-bold outline-none">
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] font-black uppercase opacity-30 border-b border-[var(--border)]">
+                            <th class="pb-6">Customer Coordinates</th>
+                            <th class="pb-6">Tracking ID & Items</th>
+                            <th class="pb-6">Status</th>
+                            <th class="pb-6">Clearance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leadsTable" class="divide-y divide-[var(--border)]"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8">
+                <div class="app-card p-8 lg:p-12">
+                    <h3 class="text-xl font-bold mb-8 italic">Register New Part</h3>
+                    <form id="partEntryForm" class="space-y-8">
+                        <div id="dropZone" class="w-full aspect-video rounded-3xl border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center hover:border-blue-500 cursor-pointer transition overflow-hidden relative group">
+                            <img id="previewImage" class="hidden w-full h-full object-cover">
+                            <div id="uploadText" class="text-center"><p class="text-xs font-bold uppercase text-blue-600">Drag & Drop or Click to Select Image</p></div>
+                            <input type="file" id="imageInput" accept="image/*" class="hidden" required>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="text" id="name" required placeholder="Part Name" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none font-bold">
+                            <select id="category" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none font-bold">
+                                <option>Engine Parts</option><option>Gearbox & Transmission</option><option>Shock Absorbers & Brakes</option><option>Body Parts (Doors, Bumpers)</option><option>AC & Electrical</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <input type="number" id="price" required placeholder="Price" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none font-bold">
+                            <input type="text" id="oem" placeholder="OEM Number" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none font-bold">
+                            <select id="condition" class="w-full px-5 py-4 bg-transparent border border-[var(--border)] rounded-xl outline-none font-bold">
+                                <option>Tokunbo</option><option>Brand New</option><option>Refurbished</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="submitBtn" class="w-full stat-btn py-5 rounded-2xl font-black uppercase text-white shadow-xl tracking-[0.2em]">Upload Part</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4">
+                <div class="app-card p-8 flex flex-col h-full">
+                    <h4 class="font-black mb-6 italic text-[10px] tracking-widest opacity-40 uppercase">Live Activity Feed</h4>
+                    <div id="orderList" class="space-y-4 max-h-[600px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12">
+            <h3 class="text-2xl font-bold mb-10 italic uppercase">Warehouse Inventory</h3>
+            <div id="warehouseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-20"></div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        const BACKEND_BASE = 'http://localhost:5000';
+        const token = localStorage.getItem('adminToken');
+        let rawOrders = [];
+
+        if (!token) window.location.href = 'admin-login.html';
+
+        function showNotify(msg, type = 'success') {
+            const container = document.getElementById('notif-container');
+            const toast = document.createElement('div');
+            toast.className = `bg-[var(--card)] border-l-4 p-5 rounded-2xl shadow-2xl toast-enter pointer-events-auto min-w-[280px] font-black uppercase text-[10px] tracking-widest ${type === 'success' ? 'border-blue-600 text-blue-600' : 'border-red-600 text-red-600'}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('toast-active'), 100);
+            setTimeout(() => { toast.classList.remove('toast-active'); setTimeout(() => toast.remove(), 500); }, 4000);
+        }
+
+        async function loadOrders() {
+            try {
+                const res = await fetch(`${API_BASE}/orders`, { headers: { 'Authorization': `Bearer ${token}` } });
+                rawOrders = await res.json();
+                renderLeads(rawOrders);
+                renderRawFeed(rawOrders);
+            } catch (err) { console.error(err); }
+        }
+
+        function renderLeads(orders) {
+            const grouped = {};
+            orders.forEach(o => {
+                const gid = o.tracking_id || o.customer_name;
+                if (!grouped[gid]) grouped[gid] = { name: o.customer_name, email: o.customer_email, items: [], total: 0, receipt: o.receipt_url, status: o.status, tid: o.tracking_id };
+                grouped[gid].items.push(o.part_name);
+                grouped[gid].total += Number(o.price);
+            });
+
+            document.getElementById('leadsTable').innerHTML = Object.keys(grouped).map(gid => {
+                const lead = grouped[gid];
+                const isConfirmed = lead.status === 'Confirmed Payment' || lead.status === 'Confirmed';
+                return `<tr class="text-sm border-b border-[var(--border)] hover:bg-white/5 transition">
+                    <td class="py-8"><p class="font-black text-blue-600 uppercase">${lead.name}</p><p class="text-[10px] opacity-40 font-bold">${lead.email}</p></td>
+                    <td class="py-8"><p class="text-[10px] font-black text-purple-600 uppercase">${lead.tid || 'Pending ID'}</p><p class="text-[10px] font-bold opacity-60 italic">${lead.items.length} Parts</p></td>
+                    <td class="py-8"><span class="px-3 py-1 rounded-full text-[8px] font-black uppercase border ${isConfirmed ? 'bg-green-500/10 border-green-500 text-green-500' : 'bg-orange-500/10 border-orange-500 text-orange-500'}">${lead.status || 'Pending'}</span></td>
+                    <td class="py-8"><div class="flex gap-2">
+                        <button onclick="openReceiptModal('${lead.receipt}')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase shadow-lg">Verify</button>
+                        ${!isConfirmed ? `<button onclick="confirmPayment('${lead.tid}', '${lead.email}')" class="bg-green-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase shadow-lg">Confirm Pay</button>` : ''}
+                    </div></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderRawFeed(orders) {
+            document.getElementById('orderList').innerHTML = orders.map(o => {
+                const d = new Date(o.created_at);
+                const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const date = d.toLocaleDateString();
+                return `<div onclick="openReceiptModal('${o.receipt_url}')" class="p-4 rounded-2xl bg-white/5 border border-white/5 cursor-pointer hover:border-blue-600 transition"><div class="flex justify-between items-center mb-1"><p class="text-[10px] font-black uppercase text-blue-600">${o.customer_name}</p><p class="text-[8px] font-bold opacity-40">${time} • ${date}</p></div><p class="text-[10px] font-bold opacity-60 truncate">${o.part_name}</p></div>`;
+            }).join('');
+        }
+
+        async function confirmPayment(tid, email) {
+            if (!tid || tid === 'Pending ID') return showNotify("Tracking ID missing", "error");
+            if (!confirm(`Confirm Pay for ${tid}? Automatic email will be sent.`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/orders/update-status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ tracking_id: tid, status: 'Confirmed Payment', email: email })
+                });
+                if (res.ok) { showNotify(`Payment Confirmed: ${tid}`); loadOrders(); }
+            } catch (err) { showNotify("Server failed", "error"); }
+        }
+
+        async function loadWarehouse() {
+            const res = await fetch(`${API_BASE}/parts`);
+            const parts = await res.json();
+            document.getElementById('warehouseGrid').innerHTML = parts.map(part => {
+                const clean = part.image_url.replace(/^\/+/, '');
+                return `<div class="app-card p-5 group border border-transparent hover:border-blue-600 transition"><img src="${BACKEND_BASE}/${clean}" class="part-img mb-5 grayscale group-hover:grayscale-0 transition duration-500"><h4 class="font-black text-xs truncate uppercase mb-4">${part.name}</h4><div class="flex justify-between items-center"><span class="font-black text-blue-600 italic">₦${Number(part.price).toLocaleString()}</span><div class="flex gap-2"><button onclick='openEdit(${JSON.stringify(part).replace(/'/g, "&apos;")})' class="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black uppercase hover:bg-blue-600 hover:text-white transition">Edit</button><button onclick="deletePart(${part.id})" class="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black uppercase hover:bg-red-600 hover:text-white transition">Delete</button></div></div></div>`;
+            }).join('');
+        }
+
+        function openEdit(p) { document.getElementById('editId').value = p.id; document.getElementById('editName').value = p.name; document.getElementById('editPrice').value = p.price; document.getElementById('editDiscount').value = p.discount_price || 0; document.getElementById('editModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('editModal').classList.add('hidden'); }
+        function openReceiptModal(path) { if (!path || path === "null") return showNotify("No Receipt", "error"); document.getElementById('modalReceiptImg').src = `${BACKEND_BASE}/${path.replace(/^\/+/, '')}`; document.getElementById('receiptModal').classList.remove('hidden'); }
+        function closeReceiptModal() { document.getElementById('receiptModal').classList.add('hidden'); }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+        function logout() { localStorage.removeItem('adminToken'); window.location.href = 'admin-login.html'; }
+
+        async function loadStats() {
+            const res = await fetch(`${API_BASE}/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const s = await res.json();
+            document.getElementById('totalRevenue').innerText = `₦${Number(s.totalRevenue).toLocaleString()}`;
+            document.getElementById('totalOrders').innerText = s.totalOrders;
+            document.getElementById('itemCount').innerText = s.totalParts;
+            loadOrders();
+        }
+
+        const dropZone = document.getElementById('dropZone');
+        const imageInput = document.getElementById('imageInput');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); }));
+        dropZone.onclick = () => imageInput.click();
+        imageInput.onchange = e => { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = ev => { const i = document.getElementById('previewImage'); i.src = ev.target.result; i.classList.remove('hidden'); document.getElementById('uploadText').classList.add('hidden'); }; r.readAsDataURL(f); } };
+
+        document.getElementById('partEntryForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('name', document.getElementById('name').value);
+            fd.append('category', document.getElementById('category').value);
+            fd.append('price', document.getElementById('price').value);
+            fd.append('oem', document.getElementById('oem').value);
+            fd.append('condition', document.getElementById('condition').value);
+            fd.append('image', imageInput.files[0]);
+            const res = await fetch(`${API_BASE}/parts`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: fd });
+            if (res.ok) { showNotify("Part Registered"); e.target.reset(); document.getElementById('previewImage').classList.add('hidden'); document.getElementById('uploadText').classList.remove('hidden'); loadWarehouse(); loadStats(); }
+        };
+
+        loadStats(); loadWarehouse();
+    </script>
+</body>
+</html>
